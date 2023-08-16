@@ -1,0 +1,48 @@
+# ---
+# applications:
+#   - name: ampere-01
+#     random-route: false
+#     buildpacks:
+#       - python_buildpack
+#     memory: 256M
+#     routes:
+#       - route: ampere-01.app.cloud.gov
+
+---
+applications:
+  - name: ampere-01-((env))
+    buildpack: python_buildpack
+    stack: cflinuxfs4
+    instances: 1
+    disk_quota: 1G
+    routes:
+      - route: ampere-01-((env)).app.cloud.gov
+    # - route: ((public_api_route))
+
+    services:
+      - ampere-01-redis-((env))
+
+    processes:
+      - type: web
+        instances: ((web_instances))
+        memory: ((web_memory))
+        command: ./scripts/migrate_and_run_web.sh
+      # - type: worker
+      #   instances: ((worker_instances))
+      #   memory: ((worker_memory))
+      #   command: newrelic-admin run-program celery -A run_celery.notify_celery worker --loglevel=INFO --concurrency=4
+      # - type: scheduler
+      #   instances: 1
+      #   memory: ((scheduler_memory))
+      #   command: celery -A run_celery.notify_celery beat --loglevel=INFO
+
+    env:
+      FLASK_APP: flaskredis.py
+      FLASK_DEBUG: "false"
+
+      # Credentials variables
+      MY_FIRST_ENV_VAR: ((MY_FIRST_ENV_VAR)) # if not in demo.yml then gets filled by github workflow demo-deploy.yml josb > deploy > env?
+
+
+      # REQUESTS_CA_BUNDLE: "/etc/ssl/certs/ca-certificates.crt"
+      # NEW_RELIC_CA_BUNDLE_PATH: "/etc/ssl/certs/ca-certificates.crt"

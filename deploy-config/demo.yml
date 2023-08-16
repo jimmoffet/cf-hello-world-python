@@ -1,0 +1,8 @@
+env: staging
+web_instances: 1
+web_memory: 1G
+# worker_instances: 0
+# worker_memory: 512M
+# scheduler_memory: 256M
+public_api_route: ampere-01-staging.app.cloud.gov
+# admin_base_url: https://notify-demo.app.cloud.gov # call front-end api
